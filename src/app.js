@@ -19,6 +19,18 @@ app.use(
     new FileDb()
 );
 
+// FIREBASE IMPORT & INITIALIZATION
+var admin = require("firebase-admin");
+
+var serviceAccount = require("../secrets/serviceAccountKey.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://fir-jovo-demo.firebaseio.com"
+});
+
+var db = admin.firestore();
+
 
 // ------------------------------------------------------------------
 // APP LOGIC
@@ -26,6 +38,15 @@ app.use(
 
 app.setHandler({
     LAUNCH() {
+        let userId = this.$user.getId();
+        var cityRef = db.collection('users').doc(userId);
+
+        var setWithOptions = cityRef.set({
+            cool: true,
+            teacher: "Udemy",
+            student: 56,
+            free: "always"
+        }, {merge: true});
         this.toIntent('HelloWorldIntent');
     },
 
